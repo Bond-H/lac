@@ -25,6 +25,7 @@ import shutil
 import logging
 
 import numpy as np
+import paddle
 import paddle.fluid as fluid
 from paddle.fluid.core import PaddleTensor
 from paddle.fluid.core import AnalysisConfig
@@ -35,7 +36,7 @@ from . import utils
 from . import nets
 from .custom import Customization
 from ._compat import *
-
+paddle.enable_static()
 
 def _get_abs_path(path): return os.path.normpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__), path))
@@ -50,16 +51,15 @@ class LAC(object):
 
     def __init__(self, model_path=None, mode='lac', use_cuda=False):
         super(LAC, self).__init__()
-        utils.check_cuda(use_cuda)
         if model_path is None:
             model_path = DEFAULT_SEG if mode == 'seg' else DEFAULT_LAC
 
         self.args = utils.DefaultArgs(model_path)
         self.args.use_cuda = use_cuda
         self.model_path = model_path
+        
         config = AnalysisConfig(self.args.init_checkpoint)
         config.disable_glog_info()
-
         if use_cuda:
             self.place = fluid.CUDAPlace(
                 int(os.getenv('FLAGS_selected_gpus', '0')))
@@ -228,7 +228,6 @@ class LAC(object):
         tensor.shape = [lod[-1], 1]
 
         return tensor
-
 
 if __name__ == "__main__":
     lac = LAC('lac_model')

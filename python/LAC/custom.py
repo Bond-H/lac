@@ -24,10 +24,10 @@ from io import open
 import logging
 
 try:
-    from .ahocorasick import Ahocorasick
+    from .triedtree import TriedTree
     from ._compat import strdecode
 except:
-    from ahocorasick import Ahocorasick
+    from triedtree import TriedTree
     from _compat import strdecode
 
 
@@ -43,7 +43,7 @@ class Customization(object):
 
     def load_customization(self, filename, sep=None):
         """装载人工干预词典"""
-        self.ac = Ahocorasick()
+        self.ac = TriedTree()
         with open(filename, 'r', encoding='utf8') as f:
             for line in f:
                 if sep == None:
